@@ -2,66 +2,142 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>สุ่มตัวเลข</title>
+<title>Random Number Generator</title>
 <style>
 body{
-    font-family: Arial;
-    background:#f2f2f2;
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#141e30,#243b55);
+    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
 }
 .box{
-    background:white;
+    background:#1e293b;
     padding:30px;
-    border-radius:10px;
+    border-radius:15px;
+    width:320px;
     text-align:center;
-    box-shadow:0 4px 10px rgba(0,0,0,.1);
+    box-shadow:0 10px 25px rgba(0,0,0,.4);
 }
-input{
-    width:70px;
-    padding:5px;
+h2{margin-bottom:15px;}
+input,select{
+    width:80px;
+    padding:6px;
     margin:5px;
+    border-radius:6px;
+    border:none;
     text-align:center;
 }
 button{
-    padding:10px 20px;
+    margin-top:15px;
+    padding:10px 25px;
     font-size:16px;
+    border:none;
+    border-radius:8px;
     cursor:pointer;
+    background:#38bdf8;
+}
+button:hover{
+    background:#0ea5e9;
 }
 #result{
     margin-top:20px;
-    font-size:28px;
-    color:#007bff;
-    font-weight:bold;
+    font-size:20px;
+    line-height:1.6;
+    color:#facc15;
+    word-wrap:break-word;
+}
+.lang{
+    text-align:right;
+    margin-bottom:10px;
 }
 </style>
 </head>
 
 <body>
 <div class="box">
-    <h2>สุ่มตัวเลข</h2>
-    จาก <input type="number" id="min" value="1">
-    ถึง <input type="number" id="max" value="100">
-    <br>
-    <button onclick="randomNum()">สุ่ม!</button>
+    <div class="lang">
+        <select id="language" onchange="changeLang()">
+            <option value="th">TH</option>
+            <option value="en">EN</option>
+        </select>
+    </div>
+
+    <h2 id="title">สุ่มตัวเลข (ไม่ซ้ำ)</h2>
+
+    <div>
+        <span id="fromText">จาก</span>
+        <input type="number" id="min" value="1">
+        <span id="toText">ถึง</span>
+        <input type="number" id="max" value="20">
+    </div>
+
+    <div>
+        <span id="countText">จำนวน</span>
+        <input type="number" id="count" value="5">
+    </div>
+
+    <button onclick="randomUnique()" id="btn">สุ่ม</button>
+
     <div id="result">-</div>
 </div>
 
 <script>
-function randomNum(){
+const text = {
+    th:{
+        title:"สุ่มตัวเลข (ไม่ซ้ำ)",
+        from:"จาก",
+        to:"ถึง",
+        count:"จำนวน",
+        btn:"สุ่ม",
+        error:"จำนวนที่สุ่มมากกว่าช่วงตัวเลข"
+    },
+    en:{
+        title:"Random Number (No Repeat)",
+        from:"From",
+        to:"To",
+        count:"Count",
+        btn:"Random",
+        error:"Count exceeds range"
+    }
+};
+
+function changeLang(){
+    let lang = document.getElementById("language").value;
+    document.getElementById("title").innerText = text[lang].title;
+    document.getElementById("fromText").innerText = text[lang].from;
+    document.getElementById("toText").innerText = text[lang].to;
+    document.getElementById("countText").innerText = text[lang].count;
+    document.getElementById("btn").innerText = text[lang].btn;
+}
+
+function randomUnique(){
     let min = parseInt(document.getElementById("min").value);
     let max = parseInt(document.getElementById("max").value);
+    let count = parseInt(document.getElementById("count").value);
+    let lang = document.getElementById("language").value;
 
-    if(min > max){
-        alert("เลขเริ่มต้นต้องน้อยกว่าเลขสุดท้าย");
+    let range = [];
+    for(let i=min;i<=max;i++) range.push(i);
+
+    if(count > range.length){
+        alert(text[lang].error);
         return;
     }
 
-    let r = Math.floor(Math.random()*(max-min+1))+min;
-    document.getElementById("result").innerText = r;
+    let result = [];
+    for(let i=0;i<count;i++){
+        let index = Math.floor(Math.random()*range.length);
+        result.push(range[index]);
+        range.splice(index,1); // ลบเพื่อไม่ให้ซ้ำ
+    }
+
+    document.getElementById("result").innerText = result.join(", ");
 }
 </script>
+
 </body>
 </html>
